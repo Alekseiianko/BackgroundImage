@@ -20,21 +20,15 @@ import android.widget.Toast;
 import java.io.File;
 
 public class MainActivity extends AppCompatActivity {
-
     private static final int REQUEST_CODE = 11;
     private ImageView imageView;
+    public static final String IMAGE = "image";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        int permissionStatus = ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE);//проверяю возможность работы с внешним хранением
-        if (permissionStatus == PackageManager.PERMISSION_GRANTED) {
-            Log.i("Ok", "Next");
-        } else {
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_CODE); // запрашиваю разрешение если такового нет
-        }
+        imageView = findViewById(R.id.imageView);
     }
 
     public void changeActivity(View view) {
@@ -45,19 +39,12 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (data == null) {
+        if (data == null || requestCode != REQUEST_CODE || resultCode != RESULT_OK) {
             return;
         }
 
-        String image = data.getStringExtra("image");
-        if (image.equals("Downloads/12.jpg")) {
-            File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), "12.jpg");
-            imageView = findViewById(R.id.imageView);
-            Bitmap bitmap = BitmapFactory.decodeFile(file.getAbsolutePath());
-            imageView.setImageBitmap(bitmap);
-        } else {
-            Toast.makeText(this, "Error", Toast.LENGTH_LONG);
-        }
-
+        String image = data.getStringExtra(IMAGE);
+        Bitmap bitmap = BitmapFactory.decodeFile(image);
+        imageView.setImageBitmap(bitmap);
     }
 }
